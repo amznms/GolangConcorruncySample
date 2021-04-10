@@ -13,7 +13,9 @@ var server string
 var port int
 var requests int
 var help bool
+
 var wg sync.WaitGroup
+var api *ApiUtil
 
 func init() {
 	flag.StringVar(&server, "server", "http://127.0.0.1", "specify server address")
@@ -26,22 +28,23 @@ func init() {
 	if help {
 		flag.PrintDefaults()
 	}
+
+	api = new(ApiUtil)
 }
 
 func main() {
 	fmt.Println("Iniciando...")
 	for i := 0; i < requests; i++ {
 		wg.Add(1)
-		go setupRequest()
+		go request()
 	}
 	wg.Wait()
 	fmt.Println("Finalizado!")
 	fmt.Scanln()
 }
 
-func setupRequest() {
+func request() {
 	var url string = fmt.Sprintf("%s:%d/other/hello", server, port)
-	api := new(ApiUtil)
 	fmt.Println(api.apiGetRequest(url))
 	wg.Done()
 }
